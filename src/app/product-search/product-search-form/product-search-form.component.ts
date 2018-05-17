@@ -11,8 +11,11 @@ import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 export class ProductSearchFormComponent implements OnInit {
   brandFirebaseList: AngularFireList<any[]>;
   clothingsFirebaseList: AngularFireList<any[]>;
-  brands = [];
-  clothings = [];
+  public brands = [];
+  public clothings = [];
+  public productObject = {};
+  itensTobeDisplayed = [];
+
 
   constructor(db: AngularFireDatabase) {
     db.list('/clothings')
@@ -35,10 +38,43 @@ export class ProductSearchFormComponent implements OnInit {
   }
 
   form_submit(f: NgForm) {
-    console.log(f.form.controls);
-    console.log('valor do controle nome: ' + f.form.controls.product.value);
-    console.log(this.brands);
-    console.log(this.clothings);
+    let stringToSplit = f.form.controls.product.value;
+    let splittedProductDescription = stringToSplit.split(" ");
+
+    this.itensTobeDisplayed =  this.verifyProductBrand(this.brands, splittedProductDescription);
+  }
+
+  verifyProductBrand(brandsArray, splittedProductDescription):Object[] {
+    var verifiedBrandsToShow = [];
+
+    for (let index = 0; index < splittedProductDescription.length; index++) {
+      const item = splittedProductDescription[index];
+      var twoWordsToSearch = "";
+      var brandFoundIndex = -1;
+
+      if (item == 'Banana' || item == 'Hugo' || item == 'Rebeca') {
+        twoWordsToSearch = splittedProductDescription[index] + " " + splittedProductDescription[index + 1];
+        brandFoundIndex = brandsArray.indexOf(twoWordsToSearch);
+        if (brandFoundIndex >= 0) {
+          verifiedBrandsToShow.push({ value: splittedProductDescription[index], style: 'bold' });
+          verifiedBrandsToShow.push({ value: splittedProductDescription[index + 1], style: 'bold' });
+          index++;
+        }
+        else {
+          verifiedBrandsToShow.push({ value: splittedProductDescription[index] });
+        }
+      }
+      else {
+        brandFoundIndex = brandsArray.indexOf(item)
+        if (brandFoundIndex >= 0) {
+          verifiedBrandsToShow.push({ value: splittedProductDescription[index], style: 'bold' })
+        }
+        else {
+          verifiedBrandsToShow.push({ value: splittedProductDescription[index] });
+        }
+      }
+    }
+    return verifiedBrandsToShow;
   }
 
 }
