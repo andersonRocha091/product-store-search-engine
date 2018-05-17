@@ -1,4 +1,8 @@
-<p>
-  product-search works!
-</p>
-<button class="btn btn-primary">Test Button</button>
+<h1>Love Shopping</h1>
+<form #f="ngForm" (submit)="form_submit(f)">
+  <div class="form-group">
+    <input type="text" class="form-control text-input" ngModel name="product" placeholder="Inser product to search">
+    <small class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <button class="btn btn-primary" type=”submit”>Search</button>
+</form>
