@@ -14,7 +14,7 @@ export class ProductSearchFormComponent implements OnInit {
   public brands = [];
   public clothings = [];
   public productObject = {};
-  itensTobeDisplayed = [];
+  public itensTobeDisplayed = [];
 
 
   constructor(db: AngularFireDatabase) {
@@ -22,14 +22,12 @@ export class ProductSearchFormComponent implements OnInit {
       .valueChanges()
       .subscribe(res => {
         this.clothings = res;
-        console.log(this.clothings)
       })
 
     db.list('/brands')
       .valueChanges()
       .subscribe(res => {
         this.brands = res;
-        console.log(this.brands);
       })
 
   }
@@ -40,12 +38,27 @@ export class ProductSearchFormComponent implements OnInit {
   form_submit(f: NgForm) {
     let stringToSplit = f.form.controls.product.value;
     let splittedProductDescription = stringToSplit.split(" ");
+    this.itensTobeDisplayed = [];
+  
+    this.verifyProductBrand(this.itensTobeDisplayed, this.brands, splittedProductDescription);
+    this.verifyProductClothing(this.itensTobeDisplayed, this.clothings, splittedProductDescription);
+    console.log(this.itensTobeDisplayed);
 
-    this.itensTobeDisplayed =  this.verifyProductBrand(this.brands, splittedProductDescription);
   }
 
-  verifyProductBrand(brandsArray, splittedProductDescription):Object[] {
-    var verifiedBrandsToShow = [];
+  verifyProductClothing(itensTobeDisplayed, clothingArray, splittedProductDescription) {
+    for (let index = 0; index < splittedProductDescription.length; index++) {
+      const item = splittedProductDescription[index];
+
+      var itemIndex = clothingArray.indexOf(item);
+      if (itemIndex >= 0) {
+        itensTobeDisplayed[index] = { value: splittedProductDescription[index], style: 'italics' }
+      }
+
+    }
+  }
+
+  verifyProductBrand(itensTobeDisplayed, brandsArray, splittedProductDescription) {
 
     for (let index = 0; index < splittedProductDescription.length; index++) {
       const item = splittedProductDescription[index];
@@ -56,25 +69,24 @@ export class ProductSearchFormComponent implements OnInit {
         twoWordsToSearch = splittedProductDescription[index] + " " + splittedProductDescription[index + 1];
         brandFoundIndex = brandsArray.indexOf(twoWordsToSearch);
         if (brandFoundIndex >= 0) {
-          verifiedBrandsToShow.push({ value: splittedProductDescription[index], style: 'bold' });
-          verifiedBrandsToShow.push({ value: splittedProductDescription[index + 1], style: 'bold' });
+          itensTobeDisplayed.push({ value: splittedProductDescription[index], style: 'bold' });
+          itensTobeDisplayed.push({ value: splittedProductDescription[index + 1], style: 'bold' });
           index++;
         }
         else {
-          verifiedBrandsToShow.push({ value: splittedProductDescription[index] });
+          itensTobeDisplayed.push({ value: splittedProductDescription[index] });
         }
       }
       else {
         brandFoundIndex = brandsArray.indexOf(item)
         if (brandFoundIndex >= 0) {
-          verifiedBrandsToShow.push({ value: splittedProductDescription[index], style: 'bold' })
+          itensTobeDisplayed.push({ value: splittedProductDescription[index], style: 'bold' })
         }
         else {
-          verifiedBrandsToShow.push({ value: splittedProductDescription[index] });
+          itensTobeDisplayed.push({ value: splittedProductDescription[index] });
         }
       }
     }
-    return verifiedBrandsToShow;
   }
 
 }
