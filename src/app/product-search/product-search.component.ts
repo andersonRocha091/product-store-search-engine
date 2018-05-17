@@ -13,9 +13,4 @@ export class ProductSearchComponent implements OnInit {
   ngOnInit() {
   }
 
-  form_submit(f: NgForm) {
-    console.log(f.form.controls);
-    console.log('valor do controle nome: ' + f.form.controls.nome.value);
-  }
-
 }
